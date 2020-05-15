@@ -1,0 +1,34 @@
+h1 {
+  text-align: center;
+}
+
+.customer-list {
+  margin-left: 15%;
+  margin-right: 15%;
+}
+
+.customer-list-filters {
+  display: flex;
+  justify-content: space-between;
+}
+
+.customer-list-headers {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+}
+
+.customer-list-headers div {
+  cursor: pointer;
+}
+
+.customer-list-item {
+  display: flex;
+  justify-content: space-between;
+}
+
+.MuiFormControl-root {
+  padding-left: 50px !important;
+  padding-right: 50px !important;
+  padding-bottom: 50px !important;
+}
