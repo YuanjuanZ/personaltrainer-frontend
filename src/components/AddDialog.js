@@ -1,7 +1,7 @@
 import React from "react";
 import Dialog from '@material-ui/core/Dialog';
 import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
+import TextField from '@material-ui/core/TextField';
 import { FormGroup, Button } from "@material-ui/core";
 
 function AddDialog(props) {
@@ -13,16 +13,52 @@ function AddDialog(props) {
         city: '',
         email: '',
         phone: '',
+        content: []
     });
-    const [editingCustomer, setEditingCustomer] = React.useState({});
 
     const editData = (event) => {
-        console.log(event.target.value);
-        setNewCustomer({...newCustomer, [event.target.name] : event.target.value});
+        if (props.dialogType === "new") {
+            setNewCustomer({...newCustomer, [event.target.name] : event.target.value});
+        } else {
+            props.editCustomer(event);
+        }
+        
+    }
+
+    const saveData = () => {
+        if (props.dialogType === "new") {
+            fetch('https://customerrest.herokuapp.com/api/customers', {
+                method: 'post',
+                body: JSON.stringify(newCustomer),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(err => console.error(err));
+            window.location.reload();
+        } else {
+            if (props.editingCustomer.links && props.editingCustomer.links[0]) {
+                const link = props.editingCustomer.links[0].href;
+                const id = link.replace("https://customerrest.herokuapp.com/api/customers/", "");
+                fetch(`https://customerrest.herokuapp.com/api/customers/${id}`, {
+                    method: 'put',
+                    body: JSON.stringify(props.editingCustomer),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(err => console.error(err));
+                window.location.reload();
+            }
+        }
     }
 
 
-    const customerObj = props.dialogType === 'new' ? newCustomer : editingCustomer;
+    const customerObj = props.dialogType === 'new' ? newCustomer : props.editingCustomer;
 
     return (
         <Dialog open={props.open} onClose={props.handleClose}>
@@ -30,72 +66,66 @@ function AddDialog(props) {
             {props.type === 'customer' &&
             <FormControl>
                 <FormGroup>
-                    <Input 
-                        id="firstname-input"
+                    <TextField 
+                        label="First Name"
                         name="firstname" 
                         value={customerObj.firstname} 
                         onChange={(e) => editData(e)}
-                        placeholder="First name"
                     />
                 </FormGroup>
                 <FormGroup>
-                    <Input 
-                        id="lastname-input" 
+                    <TextField 
                         name="lastname" 
                         value={customerObj.lastname} 
                         onChange={(e) => editData(e)}
-                        placeholder="Last name"
+                        label="Last name"
                     />
                 </FormGroup>
                 <FormGroup>
-                    <Input 
-                        id="streetaddress-input" 
+                    <TextField 
                         name="streetaddress" 
                         value={customerObj.streetaddress} 
                         onChange={(e) => editData(e)}
-                        placeholder="Street address"
+                        label="Street address"
                     />
                 </FormGroup>
                 <FormGroup>
-                    <Input 
-                        id="postcode-input" 
+                    <TextField 
                         name="postcode" 
                         value={customerObj.postcode} 
                         onChange={(e) => editData(e)}
-                        placeholder="Postcode"
+                        label="Postcode"
                     />
                 </FormGroup>
                 <FormGroup>
-                    <Input 
-                        id="city-input" 
+                    <TextField 
                         name="city" 
                         value={customerObj.city}
                         onChange={(e) => editData(e)} 
-                        placeholder="City"
+                        label="City"
                     />
                 </FormGroup>
                 <FormGroup>
-                    <Input 
-                        id="email-input" 
+                    <TextField 
                         name="email" 
                         value={customerObj.email} 
                         onChange={(e) => editData(e)}
-                        placeholder="Email"
+                        label="Email"
                     />
                 </FormGroup>
                 <FormGroup>
-                    <Input 
-                        id="phone-input" 
+                    <TextField 
                         name="phone" 
                         value={customerObj.phone} 
                         onChange={(e) => editData(e)}
-                        placeholder="Phone"
+                        label="Phone"
                     />
                 </FormGroup>
                 <FormGroup>
                     <Button
                         color="primary"
                         variant="contained"
+                        onClick={() => saveData()}
                     >
                         Save
                     </Button>
